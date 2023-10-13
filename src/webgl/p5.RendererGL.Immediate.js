@@ -128,14 +128,13 @@ p5.RendererGL.prototype.vertex = function(x, y) {
     lineVertexColor[3]
   );
 
-  if (this.textureMode === constants.IMAGE) {
+  if (this.textureMode === constants.IMAGE && !this.isProcessingVertices) {
     if (this._tex !== null) {
       if (this._tex.width > 0 && this._tex.height > 0) {
         u /= this._tex.width;
         v /= this._tex.height;
       }
     } else if (
-      !this.isProcessingVertices &&
       this._tex === null &&
       arguments.length >= 4
     ) {
@@ -202,6 +201,15 @@ p5.RendererGL.prototype.endShape = function(
     );
     return this;
   }
+  // When we are drawing a shape then the shape mode is TESS,
+  // but in case of triangle we can skip the breaking into small triangle
+  // this can optimize performance by skipping the step of breaking it into triangles
+  if (this.immediateMode.geometry.vertices.length === 3 &&
+      this.immediateMode.shapeMode === constants.TESS
+  ) {
+    this.immediateMode.shapeMode === constants.TRIANGLES;
+  }
+
   this.isProcessingVertices = true;
   this._processVertices(...arguments);
   this.isProcessingVertices = false;
