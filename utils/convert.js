@@ -504,6 +504,10 @@ function buildParamDocs(docs) {
   out.end();
 }
 
-fs.writeFileSync(path.join(__dirname, '../docs/reference/data.json'), JSON.stringify(converted, null, 2));
-fs.writeFileSync(path.join(__dirname, '../docs/reference/data.min.json'), JSON.stringify(converted));
+const folder = path.join(__dirname, '../docs/reference');
+
+if (!fs.existsSync(folder)) fs.mkdirSync(folder);
+
+fs.writeFileSync(path.join(folder, 'data.json'), JSON.stringify(converted, null, 2));
+fs.writeFileSync(path.join(folder, 'data.min.json'), JSON.stringify(converted));
 buildParamDocs(JSON.parse(JSON.stringify(converted)));
