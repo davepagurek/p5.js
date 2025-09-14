@@ -14,12 +14,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - platform: ubuntu-latest
             browser: chrome
-          # - os: windows-latest
-          #   browser: chrome
+          - platform: self-hosted
+            browser: chrome
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.platform }}
 
     steps:
       - uses: actions/checkout@v4
@@ -30,12 +30,12 @@ jobs:
           node-version: 20.x
       
       - name: Verify Chrome (Ubuntu)
-        if: matrix.os == 'ubuntu-latest' && matrix.browser == 'chrome'
+        if: matrix.platform == 'ubuntu-latest' && matrix.browser == 'chrome'
         run: |
           google-chrome --version
 
       - name: Verify Chrome (Windows)
-        if: matrix.os == 'windows-latest' && matrix.browser == 'chrome'
+        if: matrix.platform == 'windows-latest' && matrix.browser == 'chrome'
         run: |
           & "C:\Program Files\Google\Chrome\Application\chrome.exe" --version
       
@@ -44,14 +44,14 @@ jobs:
         env:
           CI: true
 
-          #- name: Build and test (Ubuntu)
-          #  if: matrix.os == 'windows-latest'
-          #  run: npm test -- --project=unit-tests-webgpu
-          #  env:
-          #    CI: true
+      - name: Build and test WebGPU (Ubuntu)
+        if: matrix.platform == 'self-hosted'
+        run: npm test -- --project=unit-tests-webgpu
+        env:
+          CI: true
 
       - name: Build and test (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.platform == 'ubuntu-latest'
         run: npm test -- --project=unit-tests
         env:
           CI: true
