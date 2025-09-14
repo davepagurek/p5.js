@@ -91,11 +91,12 @@ export default defineWorkspace([
             'goog:chromeOptions': {
               args: [
                 '--no-sandbox',
+                '--headless=new',
                 '--enable-unsafe-webgpu',
                 '--headless=new',
-                // '--use-gl=angle',
-                // '--use-angle=gl-egl',
-                // '--use-cmd-decoder=passthrough',
+                '--use-gl=angle',
+                '--use-angle=gl-egl',
+                '--use-cmd-decoder=passthrough',
                 // '--disable-frame-rate-limit',
                 // '--disable-dev-shm-usage',
               ]

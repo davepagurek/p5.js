@@ -46,9 +46,11 @@ jobs:
 
       - name: Build and test WebGPU (self-hosted)
         if: matrix.platform == 'self-hosted'
-        run: npm test -- --project=unit-tests-webgpu
+        # run: npm test -- --project=unit-tests-webgpu
+        run: |
+          xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" bash -c 'CI=true npm run test -- --project=unit-tests-webgpu'
         env:
-          CI: ""
+          CI: true
 
       - name: Build and test (Ubuntu)
         if: matrix.platform == 'ubuntu-latest'
