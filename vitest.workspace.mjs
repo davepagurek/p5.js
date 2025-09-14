@@ -92,6 +92,11 @@ export default defineWorkspace([
                 '--no-sandbox',
                 '--headless=new',
                 '--enable-unsafe-webgpu',
+                '--use-gl=angle',
+                '--use-angle=gl-egl',
+                '--use-cmd-decoder=passthrough',
+                '--disable-frame-rate-limit',
+                '--disable-dev-shm-usage',
               ]
             }
           } : undefined
