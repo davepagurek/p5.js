@@ -47,11 +47,6 @@ export default defineWorkspace([
               args: [
                 '--no-sandbox',
                 '--headless=new',
-                '--enable-unsafe-webgpu',
-                '--use-vulkan=swiftshader',
-                '--use-webgpu-adapter=swiftshader',
-                '--use-angle=vulkan',
-                '--no-sandbox',
               ]
             }
           } : undefined
@@ -97,10 +92,6 @@ export default defineWorkspace([
                 '--no-sandbox',
                 '--headless=new',
                 '--enable-unsafe-webgpu',
-                '--use-vulkan=swiftshader',
-                '--use-webgpu-adapter=swiftshader',
-                '--use-angle=vulkan',
-                '--no-sandbox',
               ]
             }
           } : undefined
