@@ -85,17 +85,19 @@ export default defineWorkspace([
         name: 'chrome',
         provider: 'webdriverio',
         screenshotFailures: false,
+        headless: false,
         providerOptions: {
           capabilities: process.env.CI ? {
             'goog:chromeOptions': {
               args: [
                 '--no-sandbox',
                 '--enable-unsafe-webgpu',
-                '--use-gl=angle',
-                '--use-angle=gl-egl',
-                '--use-cmd-decoder=passthrough',
-                '--disable-frame-rate-limit',
-                '--disable-dev-shm-usage',
+                '--headless=new',
+                // '--use-gl=angle',
+                // '--use-angle=gl-egl',
+                // '--use-cmd-decoder=passthrough',
+                // '--disable-frame-rate-limit',
+                // '--disable-dev-shm-usage',
               ]
             }
           } : undefined

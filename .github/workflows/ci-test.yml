@@ -44,14 +44,11 @@ jobs:
         env:
           CI: true
 
-      - name: Build and test WebGPU (Ubuntu)
+      - name: Build and test WebGPU (self-hosted)
         if: matrix.platform == 'self-hosted'
-        run: |
-          Xvfb :99 -screen 0 1280x720x24 &
-          export DISPLAY=:99
-          npm test -- --project=unit-tests-webgpu
+        run: npm test -- --project=unit-tests-webgpu
         env:
-          CI: true
+          CI: ""
 
       - name: Build and test (Ubuntu)
         if: matrix.platform == 'ubuntu-latest'
