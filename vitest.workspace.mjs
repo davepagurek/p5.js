@@ -90,7 +90,6 @@ export default defineWorkspace([
             'goog:chromeOptions': {
               args: [
                 '--no-sandbox',
-                '--headless=new',
                 '--enable-unsafe-webgpu',
                 '--use-gl=angle',
                 '--use-angle=gl-egl',
