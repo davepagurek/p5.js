@@ -50,8 +50,6 @@ class RendererWebGPU extends Renderer3D {
 
   async _initContext() {
     this.adapter = await navigator.gpu?.requestAdapter(this._webgpuAttributes);
-    console.log('Adapter:');
-    console.log(this.adapter);
     if (this.adapter) {
       console.log([...this.adapter.features]);
     }
@@ -59,8 +57,6 @@ class RendererWebGPU extends Renderer3D {
       // Todo: check support
       requiredFeatures: ['depth32float-stencil8']
     });
-    console.log('Device:');
-    console.log(this.device);
     if (!this.device) {
       throw new Error('Your browser does not support WebGPU.');
     }
