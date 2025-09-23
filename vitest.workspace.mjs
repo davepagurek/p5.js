@@ -47,11 +47,6 @@ export default defineWorkspace([
               args: [
                 '--no-sandbox',
                 '--headless=new',
-                '--enable-unsafe-webgpu',
-                '--use-vulkan=swiftshader',
-                '--use-webgpu-adapter=swiftshader',
-                '--use-angle=vulkan',
-                '--no-sandbox',
               ]
             }
           } : undefined
@@ -90,6 +85,7 @@ export default defineWorkspace([
         name: 'chrome',
         provider: 'webdriverio',
         screenshotFailures: false,
+        headless: false,
         providerOptions: {
           capabilities: process.env.CI ? {
             'goog:chromeOptions': {
@@ -97,10 +93,12 @@ export default defineWorkspace([
                 '--no-sandbox',
                 '--headless=new',
                 '--enable-unsafe-webgpu',
-                '--use-vulkan=swiftshader',
-                '--use-webgpu-adapter=swiftshader',
-                '--use-angle=vulkan',
-                '--no-sandbox',
+                '--headless=new',
+                '--use-gl=angle',
+                '--use-angle=gl-egl',
+                '--use-cmd-decoder=passthrough',
+                // '--disable-frame-rate-limit',
+                // '--disable-dev-shm-usage',
               ]
             }
           } : undefined
