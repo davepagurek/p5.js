@@ -42,11 +42,69 @@ class Vector {
     }
     let dimensions = values.length; // TODO: make default 3 if no arguments
     if (dimensions === 0) {
-      this.dimensions = 2;
-      this._values = [0, 0, 0];
+      this.dimensions = 0;
+      this._values = [];
     } else {
       this.dimensions = dimensions;
       this._values = values;
+    }
+    this._minDimensions = 0;
+  }
+
+  _setDimension(n) {
+    if (this.dimensions === n) return true;
+    if (this.dimensions) {
+      console.error(`This vector is already dimension ${this.dimensions}!`);
+      return false;
+    }
+    if (this._minDimensions > n) {
+      console.error(`This vector is already dimension ${this._minDimensions}!`);
+      return false;
+    }
+    this.dimensions = n;
+    while (this._values.length < n) this._values.push(0);
+    return true;
+  }
+
+  _setMinDimension(n) {
+    if (this.dimensions && this.dimensions < n) {
+      console.error(`This vector is already dimension ${this.dimensions}!`);
+      return false;
+    }
+    this._minDimensions = Math.max(this._minDimensions, n);
+    while (this._values.length < n) this._values.push(0);
+    return true;
+  }
+
+  _matchDimensions(args) {
+    let other;
+    let otherDimensions = 0;
+    let otherMinDimensions = 0;
+    if (args[0] instanceof Vector) {
+      other = args[0];
+      otherDimensions = args[0].dimensions;
+      otherMinDimensions = args[0]._minDimensions;
+    } else {
+      other = args;
+      otherDimensions = args.length;
+      otherMinDimensions = args.length;
+    }
+    if (this.dimensions) {
+      if (other._setDimension) {
+        return other._setDimension(this.dimensions);
+      } else if (otherDimensions && otherDimensions !== this.dimensions) {
+        console.error(`Can't operate between vectors with dimensions ${this.dimensions} and ${otherDimensions}`);
+        return false;
+      } else {
+        return true;
+      }
+    } else if (otherDimensions) {
+      return this._setDimension(otherDimensions);
+    } else {
+      const n = Math.max(this._minDimensions, otherMinDimensions);
+      let ok = this._setMinDimension(n);
+      ok = ok && other._setMinDimension?.(n);
+      return ok;
     }
   }
 
@@ -201,9 +259,9 @@ class Vector {
    * @param {Number} xVal - The new value for the x component.
    */
   set x(xVal) {
-    if (this._values.length > 1) {
-      this._values[0] = xVal;
-    }
+    const ok = this._setMinDimension(1);
+    // if (!ok) return;
+    this._values[0] = xVal;
   }
 
   /**
@@ -216,9 +274,9 @@ class Vector {
    * @param {Number} yVal - The new value for the y component.
    */
   set y(yVal) {
-    if (this._values.length > 1) {
-      this._values[1] = yVal;
-    }
+    const ok = this._setMinDimension(2);
+    // if (!ok) return;
+    this._values[1] = yVal;
   }
 
   /**
@@ -231,9 +289,9 @@ class Vector {
    * @param {Number} zVal - The new value for the z component.
    */
   set z(zVal) {
-    if (this._values.length > 2) {
-      this._values[2] = zVal;
-    }
+    const ok = this._setMinDimension(3);
+    // if (!ok) return;
+    this._values[2] = zVal;
   }
 
   /**
@@ -246,9 +304,9 @@ class Vector {
    * @param {Number} wVal - The new value for the w component.
    */
   set w(wVal) {
-    if (this._values.length > 3) {
-      this._values[3] = wVal;
-    }
+    const ok = this._setMinDimension(4);
+    // if (!ok) return;
+    this._values[3] = wVal;
   }
 
   /**
@@ -333,6 +391,8 @@ class Vector {
    * @chainable
    */
   set(...args) {
+    const ok = this._matchDimensions(args);
+    // if (!ok) return;
     if (args[0] instanceof Vector) {
       this._values = args[0].values.slice();
     } else if (Array.isArray(args[0])) {
@@ -340,7 +400,6 @@ class Vector {
     } else {
       this._values = args.map(arg => arg || 0);
     }
-    this.dimensions = this._values.length;
     return this;
   }
 
@@ -515,6 +574,8 @@ class Vector {
    * @chainable
    */
   add(...args) {
+    const ok = this._matchDimensions(args);
+    // if (!ok) return;
     if (args[0] instanceof Vector) {
       args = args[0].values;
     } else if (Array.isArray(args[0])) {
@@ -647,6 +708,8 @@ class Vector {
    * @chainable
    */
   rem(x, y, z) {
+    const ok = this._matchDimensions(arguments);
+    // if (!ok) return;
     if (x instanceof Vector) {
       if ([x.x, x.y, x.z].every(Number.isFinite)) {
         const xComponent = parseFloat(x.x);
@@ -831,6 +894,8 @@ class Vector {
    * @chainable
    */
   sub(...args) {
+    const ok = this._matchDimensions(args);
+    // if (!ok) return;
     if (args[0] instanceof Vector) {
       args[0].values.forEach((value, index) => {
         this._values[index] -= value || 0;
@@ -1041,6 +1106,8 @@ class Vector {
    * @chainable
    */
   mult(...args) {
+    const ok = this._matchDimensions(args);
+    // if (!ok) return;
     if (args.length === 1 && args[0] instanceof Vector) {
       const v = args[0];
       const maxLen = Math.min(this._values.length, v.values.length);
@@ -1276,6 +1343,8 @@ class Vector {
    * @chainable
    */
   div(...args) {
+    const ok = this._matchDimensions(args);
+    // if (!ok) return;
     if (args.length === 0) return this;
     if (args.length === 1 && args[0] instanceof Vector) {
       const v = args[0];
@@ -1513,6 +1582,8 @@ class Vector {
    * @return {Number}
    */
   dot(...args) {
+    const ok = this._matchDimensions(args);
+    // if (!ok) return;
     if (args[0] instanceof Vector) {
       return this.dot(...args[0]._values);
     }
@@ -1568,6 +1639,8 @@ class Vector {
    * </div>
    */
   cross(v) {
+    const ok = this._matchDimensions(arguments);
+    // if (!ok) return;
     const x = this.y * v.z - this.z * v.y;
     const y = this.z * v.x - this.x * v.z;
     const z = this.x * v.y - this.y * v.x;
@@ -1686,6 +1759,8 @@ class Vector {
    * </div>
    */
   dist(v) {
+    const ok = this._matchDimensions(arguments);
+    // if (!ok) return;
     return v.copy().sub(this).mag();
   }
 
@@ -2477,6 +2552,8 @@ class Vector {
    * </div>
    */
   angleBetween(v) {
+    const ok = this._matchDimensions(arguments);
+    // if (!ok) return;
     const magSqMult = this.magSq() * v.magSq();
     // Returns NaN if either vector is the zero vector.
     if (magSqMult === 0) {
@@ -2611,6 +2688,8 @@ class Vector {
    * @chainable
    */
   lerp(x, y, z, amt) {
+    const ok = this._matchDimensions(arguments.slice(0, -1));
+    // if (!ok) return;
     if (x instanceof Vector) {
       return this.lerp(x.x, x.y, x.z, y);
     }
@@ -2756,6 +2835,8 @@ class Vector {
    * </div>
    */
   slerp(v, amt) {
+    const ok = this._matchDimensions(arguments.slice(0, -1));
+    // if (!ok) return;
     // edge cases.
     if (amt === 0) {
       return this;
@@ -2930,6 +3011,8 @@ class Vector {
    * </div>
    */
   reflect(surfaceNormal) {
+    const ok = this._matchDimensions(arguments);
+    // if (!ok) return;
     const surfaceNormalCopy = Vector.normalize(surfaceNormal);
     return this.sub(surfaceNormalCopy.mult(2 * this.dot(surfaceNormalCopy)));
   }
@@ -3032,6 +3115,8 @@ class Vector {
    * @return {Boolean}
    */
   equals(...args) {
+    const ok = this._matchDimensions(args);
+    // if (!ok) return;
     let values;
     if (args[0] instanceof Vector) {
       values = args[0]._values;
