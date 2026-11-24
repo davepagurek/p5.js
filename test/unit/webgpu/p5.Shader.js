@@ -2,6 +2,7 @@ import p5 from '../../../src/app.js';
 import rendererWebGPU from '../../../src/webgpu/p5.RendererWebGPU';
 
 p5.registerAddon(rendererWebGPU);
+p5.disableWebGLFallback = true;
 
 suite('WebGPU p5.Shader', function () {
   var myp5;
@@ -2798,6 +2799,66 @@ suite('WebGPU p5.Shader', function () {
             { myp5 }
           );
         }).not.toThrow();
+      });
+    });
+
+    suite('exponentiation operator', () => {
+      test('** gives the same result as pow()', async () => {
+        await myp5.createCanvas(50, 50, myp5.WEBGPU);
+        myp5.pixelDensity(1);
+        const testShader = myp5.baseMaterialShader().modify(
+          () => {
+            myp5.getFinalColor(() => {
+              let v = 0.5;
+              return [v ** 2, 0, 0, 1];
+            });
+          },
+          { myp5 }
+        );
+        myp5.background(0);
+        myp5.noStroke();
+        myp5.shader(testShader);
+        myp5.plane(myp5.width, myp5.height);
+        await myp5.loadPixels();
+        const i = (25 * myp5.width + 25) * 4;
+        assert.approximately(myp5.pixels[i], 64, 5); // 0.5 ** 2 = 0.25 -> ~64
+      });
+
+      test('**= works', async () => {
+        await myp5.createCanvas(50, 50, myp5.WEBGPU);
+        myp5.pixelDensity(1);
+        const testShader = myp5.baseMaterialShader().modify(
+          () => {
+            myp5.getFinalColor(() => {
+              let v = 0.5;
+              v **= 2;
+              return [v, 0, 0, 1];
+            });
+          },
+          { myp5 }
+        );
+        myp5.background(0);
+        myp5.noStroke();
+        myp5.shader(testShader);
+        myp5.plane(myp5.width, myp5.height);
+        await myp5.loadPixels();
+        const i = (25 * myp5.width + 25) * 4;
+        assert.approximately(myp5.pixels[i], 64, 5);
+      });
+
+      test('unsupported operators throw a clear error', async () => {
+        await myp5.createCanvas(5, 5, myp5.WEBGPU);
+        expect(() => {
+          myp5.baseMaterialShader().modify(
+            () => {
+              myp5.getFinalColor(() => {
+                let v = 1;
+                return [v & 1, 0, 0, 1];
+              });
+            },
+            { myp5 }
+          );
+        }).toThrow(/unsupported operator/);
       });
     });
 
